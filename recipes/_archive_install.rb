@@ -34,38 +34,45 @@ runtime_dir = "#{node[:wlp][:base_dir]}/wlp"
 runtime_uri = ::URI.parse(node[:wlp][:archive][:runtime][:url])
 runtime_filename = ::File.basename(runtime_uri.path)
 
-# Fetch the WAS Liberty Profile runtime file
-if runtime_uri.scheme == "file"
-  runtime_file = runtime_uri.path
-else
-  runtime_file = "#{Chef::Config[:file_cache_path]}/#{runtime_filename}"
-  remote_file runtime_file do
-    source node[:wlp][:archive][:runtime][:url]
-    user node[:wlp][:user]
-    group node[:wlp][:group]
-    checksum node[:wlp][:archive][:runtime][:checksum]
-    not_if { ::File.exists?(runtime_dir) }
+
+ruby_block "Fetch the WAS Liberty Profile runtime file" do
+  block do
+    if runtime_uri.scheme == "file"
+      runtime_file = runtime_uri.path
+    else
+      runtime_file = "#{Chef::Config[:file_cache_path]}/#{runtime_filename}"
+      remote_file runtime_file do
+        source node[:wlp][:archive][:runtime][:url]
+        user node[:wlp][:user]
+        group node[:wlp][:group]
+        checksum node[:wlp][:archive][:runtime][:checksum]
+        not_if { ::File.exists?(runtime_dir) }
+      end
+    end
   end
 end
 
 # Used to determine whether extended archive is already installed
 extended_dir = "#{node[:wlp][:base_dir]}/wlp/bin/jaxws"
 
-# Fetch the WAS Liberty Profile extended content
-if node[:wlp][:archive][:extended][:install]
-  extended_uri = ::URI.parse(node[:wlp][:archive][:extended][:url])
-  extended_filename = ::File.basename(extended_uri.path)
+ruby_block "Fetch the WAS Liberty Profile extended content" do
+  block do
+    if node[:wlp][:archive][:extended][:install]
+      extended_uri = ::URI.parse(node[:wlp][:archive][:extended][:url])
+      extended_filename = ::File.basename(extended_uri.path)
 
-  if extended_uri.scheme == "file"
-    extended_file = extended_uri.path
-  else
-    extended_file = "#{Chef::Config[:file_cache_path]}/#{extended_filename}"
-    remote_file extended_file do
-      source node[:wlp][:archive][:extended][:url]
-      user node[:wlp][:user]
-      group node[:wlp][:group]
-      checksum node[:wlp][:archive][:extended][:checksum]
-      not_if { ::File.exists?(extended_dir) }
+      if extended_uri.scheme == "file"
+        extended_file = extended_uri.path
+      else
+        extended_file = "#{Chef::Config[:file_cache_path]}/#{extended_filename}"
+        remote_file extended_file do
+          source node[:wlp][:archive][:extended][:url]
+          user node[:wlp][:user]
+          group node[:wlp][:group]
+          checksum node[:wlp][:archive][:extended][:checksum]
+          not_if { ::File.exists?(extended_dir) }
+        end
+      end
     end
   end
 end
