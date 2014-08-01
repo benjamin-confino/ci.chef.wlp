@@ -74,8 +74,7 @@ ruby_block "Fetch the WAS Liberty Profile extended content" do
         end
       end
     end
-  end
-end
+
 
 # Used to determine whether extras archive is already installed
 extras_dir = "#{node[:wlp][:archive][:extras][:base_dir]}/wlp"
@@ -134,5 +133,8 @@ if node[:wlp][:archive][:extras][:install]
     user node[:wlp][:user]
     group node[:wlp][:group]
     not_if { ::File.exists?(extras_dir) }
+  end
+end
+
   end
 end
