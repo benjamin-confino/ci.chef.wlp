@@ -41,13 +41,15 @@ ruby_block "Fetch the WAS Liberty Profile runtime file" do
       runtime_file = runtime_uri.path
     else
       runtime_file = "#{Chef::Config[:file_cache_path]}/#{runtime_filename}"
-      remote_file runtime_file do
-        source node[:wlp][:archive][:runtime][:url]
-        user node[:wlp][:user]
-        group node[:wlp][:group]
-        checksum node[:wlp][:archive][:runtime][:checksum]
-        not_if { ::File.exists?(runtime_dir) }
-      end
+      #remote_file runtime_file do
+       # source node[:wlp][:archive][:runtime][:url]
+      #  user node[:wlp][:user]
+     #   group node[:wlp][:group]
+    #    checksum node[:wlp][:archive][:runtime][:checksum]
+   #     not_if { ::File.exists?(runtime_dir) }
+  #    end
+        %x(wget #{node[:wlp][:archive][:runtime][:url]} --directory-prefix=#{runtime_file})
+        %x(chown #{node[:wlp][:user]}:#{node[:wlp][:group]} #{runtime_file})
     end
   end
 end
@@ -65,13 +67,16 @@ ruby_block "Fetch the WAS Liberty Profile extended content" do
         extended_file = extended_uri.path
       else
         extended_file = "#{Chef::Config[:file_cache_path]}/#{extended_filename}"
-        remote_file extended_file do
-          source node[:wlp][:archive][:extended][:url]
-          user node[:wlp][:user]
-          group node[:wlp][:group]
-          checksum node[:wlp][:archive][:extended][:checksum]
-          not_if { ::File.exists?(extended_dir) }
-        end
+    #    remote_file extended_file do
+     #     source node[:wlp][:archive][:extended][:url]
+      #    user node[:wlp][:user]
+       #   group node[:wlp][:group]
+        #  checksum node[:wlp][:archive][:extended][:checksum]
+         # not_if { ::File.exists?(extended_dir) }
+        #end
+        
+        %x(wget #{node[:wlp][:archive][:extended][:url]} --directory-prefix=#{extended_file})
+        %x(chown #{node[:wlp][:user]}:#{node[:wlp][:group]} #{extended_file})
       end
     end
 
@@ -88,13 +93,16 @@ if node[:wlp][:archive][:extras][:install]
     extras_file = extras_uri.path
   else
     extras_file = "#{Chef::Config[:file_cache_path]}/#{extras_filename}"
-    remote_file extras_file do
-      source node[:wlp][:archive][:extras][:url]
-      user node[:wlp][:user]
-      group node[:wlp][:group]
-      checksum node[:wlp][:archive][:extras][:checksum]
-      not_if { ::File.exists?(extras_dir) }
-    end
+   # remote_file extras_file do
+  #    source node[:wlp][:archive][:extras][:url]
+   #   user node[:wlp][:user]
+    #  group node[:wlp][:group]
+    #  checksum node[:wlp][:archive][:extras][:checksum]
+    #  not_if { ::File.exists?(extras_dir) }
+    
+     %x(wget #{node[:wlp][:archive][:extras][:url]} --directory-prefix=#{extras_file})
+     %x(chown #{node[:wlp][:user]}:#{node[:wlp][:group]} #{extras_file})
+  #  end
   end
 end
 
